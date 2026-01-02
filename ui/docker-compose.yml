@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # ===========================================
+  # ATLAS UI - LibreChat with Claude Backend
+  # ===========================================
+
+  atlas-ui:
+    image: ghcr.io/danny-avila/librechat:latest
+    container_name: atlas-ui
+    ports:
+      - "3080:3080"
+    depends_on:
+      - mongodb
+      - meilisearch
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./librechat.yaml:/app/librechat.yaml:ro
+      - ./images:/app/client/public/images
+      - ./logs:/app/api/logs
+    networks:
+      - atlas-network
+
+  # ===========================================
+  # MongoDB - Conversation Storage
+  # ===========================================
+
+  mongodb:
+    image: mongo:7.0
+    container_name: atlas-mongodb
+    restart: always
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - atlas-network
+    command: mongod --quiet --logpath /dev/null
+
+  # ===========================================
+  # Meilisearch - Conversation Search
+  # ===========================================
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.7
+    container_name: atlas-search
+    restart: always
+    environment:
+      - MEILI_NO_ANALYTICS=true
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-atlas_search_key_change_me}
+    volumes:
+      - meilisearch_data:/meili_data
+    networks:
+      - atlas-network
+
+  # ===========================================
+  # RAG API (Optional - for document search)
+  # ===========================================
+
+  # rag-api:
+  #   image: ghcr.io/danny-avila/librechat-rag-api-dev:latest
+  #   container_name: atlas-rag
+  #   restart: always
+  #   depends_on:
+  #     - vectordb
+  #   environment:
+  #     - RAG_PORT=8000
+  #   networks:
+  #     - atlas-network
+
+volumes:
+  mongodb_data:
+  meilisearch_data:
+
+networks:
+  atlas-network:
+    driver: bridge

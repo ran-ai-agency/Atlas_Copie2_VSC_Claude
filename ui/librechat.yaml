@@ -1,0 +1,250 @@
+# ===========================================
+# ATLAS - LibreChat Configuration
+# ===========================================
+# This file configures the Atlas UI behavior,
+# available models, and MCP integrations.
+
+version: 1.1.7
+
+cache: true
+
+# ===========================================
+# Interface Customization
+# ===========================================
+interface:
+  # Hide the model/provider info from users
+  showModelInfo: false
+
+  # Custom app title
+  appTitle: Atlas
+
+  # Privacy policy and terms (optional)
+  # privacyPolicy:
+  #   externalUrl: https://ran.ai/privacy
+  # termsOfService:
+  #   externalUrl: https://ran.ai/terms
+
+# ===========================================
+# Registration Settings
+# ===========================================
+registration:
+  socialLogins: []
+  allowedDomains:
+    - "ran.ai"
+    - "ranai.agency"
+
+# ===========================================
+# Model Endpoints Configuration
+# ===========================================
+endpoints:
+  # Disable OpenAI (we only use Claude)
+  openAI:
+    disabled: true
+
+  # Disable other providers
+  google:
+    disabled: true
+
+  gptPlugins:
+    disabled: true
+
+  assistants:
+    disabled: true
+
+  # ===========================================
+  # Claude / Anthropic Configuration
+  # ===========================================
+  anthropic:
+    disabled: false
+
+    # Custom title shown in UI
+    title: "Atlas AI"
+
+    # Available models
+    models:
+      default:
+        - "claude-sonnet-4-20250514"
+        - "claude-opus-4-20250514"
+        - "claude-3-5-haiku-20241022"
+      fetch: false
+
+    # Model-specific settings
+    modelSpecs:
+      - name: "claude-sonnet-4-20250514"
+        displayName: "Atlas Standard"
+        description: "Balanced performance for everyday tasks"
+        default: true
+
+      - name: "claude-opus-4-20250514"
+        displayName: "Atlas Pro"
+        description: "Maximum capability for complex analysis"
+
+      - name: "claude-3-5-haiku-20241022"
+        displayName: "Atlas Express"
+        description: "Fast responses for quick questions"
+
+    # Default parameters
+    titleModel: "claude-3-5-haiku-20241022"
+
+    # Token limits
+    maxContextTokens: 200000
+    maxOutputTokens: 8192
+
+    # Streaming enabled
+    streamRate: 25
+
+  # ===========================================
+  # Custom Endpoints (for future expansion)
+  # ===========================================
+  custom: []
+
+# ===========================================
+# MCP (Model Context Protocol) Servers
+# ===========================================
+mcpServers:
+  # Notion Integration
+  notion:
+    type: "http"
+    url: "${MCP_NOTION_URL:-https://mcp.notion.com/mcp}"
+    headers:
+      Authorization: "Bearer ${MCP_NOTION_TOKEN}"
+      Notion-Version: "2022-06-28"
+    timeout: 30000
+
+  # Zoho CRM Integration
+  zoho-crm:
+    type: "http"
+    url: "${MCP_ZOHO_CRM_URL}"
+    params:
+      key: "${MCP_ZOHO_CRM_KEY}"
+    timeout: 30000
+
+  # Zoho Books Integration
+  zoho-books:
+    type: "http"
+    url: "${MCP_ZOHO_BOOKS_URL}"
+    params:
+      key: "${MCP_ZOHO_BOOKS_KEY}"
+    timeout: 30000
+
+  # Zoho Mail Integration
+  zoho-mail:
+    type: "http"
+    url: "${MCP_ZOHO_MAIL_URL}"
+    params:
+      key: "${MCP_ZOHO_MAIL_KEY}"
+    timeout: 30000
+
+# ===========================================
+# Rate Limiting
+# ===========================================
+rateLimits:
+  fileUploads:
+    ipMax: 100
+    ipWindowInMinutes: 60
+    userMax: 50
+    userWindowInMinutes: 60
+  conversationsImport:
+    ipMax: 100
+    ipWindowInMinutes: 60
+    userMax: 50
+    userWindowInMinutes: 60
+
+# ===========================================
+# File Configuration
+# ===========================================
+fileConfig:
+  endpoints:
+    anthropic:
+      fileLimit: 5
+      fileSizeLimit: 20
+      totalSizeLimit: 50
+      supportedMimeTypes:
+        - "image/jpeg"
+        - "image/png"
+        - "image/gif"
+        - "image/webp"
+        - "application/pdf"
+        - "text/plain"
+        - "text/csv"
+        - "application/json"
+
+# ===========================================
+# System Prompts / Presets
+# ===========================================
+presets:
+  # CEO Role
+  - name: "Atlas CEO"
+    description: "Strategic leadership and vision"
+    prompt: |
+      Tu es Atlas, l'assistant IA de direction pour Ran.AI Agency.
+
+      Ton rôle: CEO - Directeur Général
+
+      Responsabilités:
+      - Vision stratégique et objectifs long terme
+      - Décisions majeures et arbitrages
+      - Relations avec partenaires clés
+      - Supervision de l'ensemble des opérations
+
+      Tu as accès à:
+      - Notion (documentation, projets)
+      - Zoho CRM (clients, prospects)
+      - Zoho Books (finances)
+      - Zoho Mail (communications)
+
+      Réponds en français. Sois concis et orienté action.
+
+  # CFO Role
+  - name: "Atlas CFO"
+    description: "Financial analysis and reporting"
+    prompt: |
+      Tu es Atlas, l'assistant IA financier pour Ran.AI Agency.
+
+      Ton rôle: CFO - Directeur Financier
+
+      Responsabilités:
+      - Analyse financière et reporting
+      - Gestion de trésorerie
+      - Budgétisation et prévisions
+      - Facturation et recouvrement
+
+      Tu as accès à Zoho Books pour les données financières.
+
+      Réponds en français. Fournis des analyses chiffrées.
+
+  # CMO Role
+  - name: "Atlas CMO"
+    description: "Marketing and client relations"
+    prompt: |
+      Tu es Atlas, l'assistant IA marketing pour Ran.AI Agency.
+
+      Ton rôle: CMO - Directeur Marketing
+
+      Responsabilités:
+      - Stratégie marketing et acquisition
+      - Gestion des prospects et pipeline
+      - Communication et branding
+      - Analyse du marché
+
+      Tu as accès à Zoho CRM pour les données clients.
+
+      Réponds en français. Focus sur la croissance.
+
+  # COO Role
+  - name: "Atlas COO"
+    description: "Operations and project management"
+    prompt: |
+      Tu es Atlas, l'assistant IA opérations pour Ran.AI Agency.
+
+      Ton rôle: COO - Directeur des Opérations
+
+      Responsabilités:
+      - Gestion des projets et livrables
+      - Optimisation des processus
+      - Coordination des équipes
+      - Suivi des KPIs opérationnels
+
+      Tu as accès à Notion pour la gestion de projets.
+
+      Réponds en français. Sois méthodique et structuré.
